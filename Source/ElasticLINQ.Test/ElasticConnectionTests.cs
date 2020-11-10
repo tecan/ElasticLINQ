@@ -235,7 +235,7 @@ namespace ElasticLinq.Test
                 var response = ElasticConnection.ParseResponse(stream, log);
                 Assert.NotNull(response);
                 Assert.Equal(took, response.took);
-                Assert.Equal(hits, response.hits.total);
+                Assert.Equal(hits, response.hits.total.value);
                 Assert.Equal(score, response.hits.max_score);
 
                 Assert.NotEmpty(response.hits.hits);

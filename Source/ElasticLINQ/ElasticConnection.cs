@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace ElasticLinq
 {
@@ -108,7 +109,7 @@ namespace ElasticLinq
             log.Debug(null, null, "Request: POST {0}", uri);
             log.Debug(null, null, "Body:\n{0}", body);
 
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, uri) {Content = new StringContent(body)})
+            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, uri) { Content = new StringContent(body) })
             {
                 requestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
                 try
@@ -193,6 +194,103 @@ namespace ElasticLinq
             {
                 if (results.hits?.hits != null && results.hits.hits.Count > 0)
                     yield return results.hits.hits.Count + " hits";
+            }
+        }
+
+        /// <inheritdoc/>
+        public override async Task<Dictionary<string, string>> GetPropertiesMappings(ILog log, CancellationToken token = default(CancellationToken))
+        {
+            var uri = GetMappingUri();
+            var propertMappings = new Dictionary<string, string>();
+            log.Debug(null, null, "Request: Get {0}", uri);
+
+            using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, uri))
+            {
+                try
+                {
+                    using (var response = await SendRequestAsync(requestMessage, token, log).ConfigureAwait(false))
+                    {
+                        using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        {
+                            using (var textReader = new JsonTextReader(new StreamReader(responseStream)))
+                            {
+                                JObject responseBody = new JsonSerializer().Deserialize<JObject>(textReader);
+                                ParseMappingResponse(responseBody.First, propertMappings);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex is HttpRequestException)
+                    {
+                    }
+
+                    throw;
+                }
+            }
+            return propertMappings;
+        }
+
+        private Uri GetMappingUri()
+        {
+            var builder = new UriBuilder(Endpoint);
+            builder.Path += (Index ?? "_all") + "/";
+
+            builder.Path += "_mapping";
+
+            return builder.Uri;
+        }
+
+        internal static Dictionary<string, string> ParseMappingResponse(JToken index, Dictionary<string, string> propertMappings)
+        {
+            if (index != null)
+            {
+                var propertiesObject = index.First["mappings"]?["properties"];
+                FetchProperties(propertiesObject, propertMappings);
+                return ParseMappingResponse(index.Next, propertMappings);
+            }
+            else
+            {
+                return propertMappings;
+            }
+        }
+
+        internal static void FetchProperties(JToken propertiesObject, Dictionary<string, string> propertMappings, string parentProperty= "")
+        {
+            if (propertiesObject != null)
+            {
+                var property = propertiesObject.First;
+                while (property != null)
+                {
+                    var propertyName = ((JProperty)property).Name;
+                    var key =string.IsNullOrEmpty(parentProperty)? propertyName : $"{parentProperty}.{propertyName}";
+                    if (!propertMappings.ContainsKey(key))
+                    {
+                        string val;
+                        var type = property.First["type"];
+                        if (type != null)
+                        {
+                            val = ((JValue)type).Value.ToString();
+                            if (!string.IsNullOrEmpty(val))
+                            {
+                                propertMappings.Add(key, val);
+                            }
+                        }
+                        var fieldtype = property.First["fields"]?["keyword"]?["type"];
+                        if (fieldtype != null)
+                        {
+                            val = ((JValue)fieldtype).Value.ToString();
+                            propertMappings.Add($"{key}.keyword", val);
+                        }
+                        var properties = property.First["properties"];
+                        if (properties != null)
+                        {
+                            FetchProperties(properties,propertMappings,key);
+                        }
+                    }
+                    property = property.Next;
+                }
             }
         }
     }

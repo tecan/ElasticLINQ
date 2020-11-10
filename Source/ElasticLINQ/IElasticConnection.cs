@@ -4,6 +4,7 @@ using ElasticLinq.Logging;
 using ElasticLinq.Request;
 using ElasticLinq.Response.Model;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,6 +44,16 @@ namespace ElasticLinq
             SearchRequest searchRequest,
             CancellationToken token,
             ILog log);
+
+        /// <summary>
+        /// Get property mappings from elasticsearch 
+        /// </summary>
+        /// <param name="token">The cancellation token to allow this request to be cancelled</param>
+        /// <param name="log">The logging mechanism for diagnostic information.</param>
+        /// <returns>Propertymappings in dictionary</returns>
+        Task<Dictionary<string, string>> GetPropertiesMappings(
+            ILog log,
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Get the uri to be used to search Elasticsearch.

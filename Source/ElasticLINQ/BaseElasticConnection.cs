@@ -1,6 +1,7 @@
 ﻿// Licensed under the Apache 2.0 License. See LICENSE.txt in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ElasticLinq.Logging;
@@ -68,5 +69,13 @@ namespace ElasticLinq
         /// <param name="searchRequest">The search request settings</param>
         /// <returns>The uri of the search</returns>
         public abstract Uri GetSearchUri(SearchRequest searchRequest);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public abstract Task<Dictionary<string, string>> GetPropertiesMappings(ILog log, CancellationToken token = default(CancellationToken));
     }
 }
