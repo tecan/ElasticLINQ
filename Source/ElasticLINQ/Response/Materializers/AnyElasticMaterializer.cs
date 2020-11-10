@@ -17,10 +17,10 @@ namespace ElasticLinq.Response.Materializers
         /// <returns>true if the source sequence contains any elements; otherwise, false.</returns>
         public object Materialize(ElasticResponse response)
         {
-            if (response.hits.total < 0)
+            if (response.hits.total.value < 0)
                 throw new ArgumentOutOfRangeException(nameof(response), "Contains a negative number of hits.");
 
-            return response.hits.total > 0;
+            return response.hits.total.value > 0;
         }
     }
 }

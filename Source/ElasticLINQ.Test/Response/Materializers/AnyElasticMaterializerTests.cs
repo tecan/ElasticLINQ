@@ -12,7 +12,7 @@ namespace ElasticLinq.Test.Response.Materializers
         public void ReturnsFalseWhenNoHits()
         {
             const int total = 0;
-            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = total } };
+            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = new Total() { value = total } } };
             var materializer = new AnyElasticMaterializer();
 
             var actual = materializer.Materialize(response);
@@ -25,7 +25,7 @@ namespace ElasticLinq.Test.Response.Materializers
         [InlineData(2)]
         public void ReturnsTrueWhenOneOrMoreHits(int total)
         {
-            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = total } };
+            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = new Total() { value = total } } };
             var materializer = new AnyElasticMaterializer();
 
             var actual = materializer.Materialize(response);
@@ -37,7 +37,7 @@ namespace ElasticLinq.Test.Response.Materializers
         public void ThrowsWhenNegativeHits()
         {
             const int total = -1;
-            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = total } };
+            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = new Total() { value = total } } };
             var materializer = new AnyElasticMaterializer();
 
             Assert.Throws<ArgumentOutOfRangeException>(() => materializer.Materialize(response));

@@ -26,12 +26,12 @@ namespace ElasticLinq.Test.Response.Materializers
 
         internal static ElasticResponse CreateSampleResponse(int count)
         {
-            return new ElasticResponse { hits = new Hits { hits = CreateSampleHits(count), total = count } };
+            return new ElasticResponse { hits = new Hits { hits = CreateSampleHits(count), total = new Total() { value = count } } };
         }
 
         internal static ElasticResponse CreateSampleResponseWithHighlight(int count)
         {
-            return new ElasticResponse { hits = new Hits { hits = CreateSampleHitsWithHighlight(count), total = count } };
+            return new ElasticResponse { hits = new Hits { hits = CreateSampleHitsWithHighlight(count), total = new Total() { value = count } } };
         }
 
         public static Hit CreateHit(string sampleField)

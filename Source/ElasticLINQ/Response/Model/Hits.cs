@@ -14,7 +14,7 @@ namespace ElasticLinq.Response.Model
         /// <summary>
         /// The total number of hits available on the server.
         /// </summary>
-        public long total;
+        public Total total;
 
         /// <summary>
         /// The highest score of a hit for the given query.

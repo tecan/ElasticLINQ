@@ -14,7 +14,7 @@ namespace ElasticLinq.Test.Response.Materializers
         public void CountMaterializerReturnsIntCount()
         {
             const int expected = int.MaxValue;
-            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = expected } };
+            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = new Total() { value = expected } } };
             var materializer = new CountElasticMaterializer(typeof(int));
 
             var actual = materializer.Materialize(response);
@@ -26,7 +26,7 @@ namespace ElasticLinq.Test.Response.Materializers
         public void CountMaterializerReturnsLongCount()
         {
             const long expected = (long)int.MaxValue + 1;
-            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = expected } };
+            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = new Total() { value = expected } } };
             var materializer = new CountElasticMaterializer(typeof(long));
 
             var actual = materializer.Materialize(response);
@@ -37,7 +37,7 @@ namespace ElasticLinq.Test.Response.Materializers
         [Fact]
         public void CountMaterializerThrowsForNegativeCount()
         {
-            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = -1 } };
+            var response = new ElasticResponse { hits = new Hits { hits = new List<Hit>(), total = new Total() { value = -1 } } };
             var materializer = new CountElasticMaterializer(typeof(int));
 
             Assert.Throws<ArgumentOutOfRangeException>(() => materializer.Materialize(response));

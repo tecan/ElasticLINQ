@@ -24,10 +24,10 @@ namespace ElasticLinq.Response.Materializers
         /// <returns>The result count expressed as either an int or long depending on the size of the count.</returns>
         public object Materialize(ElasticResponse response)
         {
-            if (response.hits.total < 0)
+            if (response.hits.total.value < 0)
                 throw new ArgumentOutOfRangeException(nameof(response), "Contains a negative number of hits.");
 
-            return Convert.ChangeType(response.hits.total, returnType);
+            return Convert.ChangeType(response.hits.total.value, returnType);
         }
     }
 }
