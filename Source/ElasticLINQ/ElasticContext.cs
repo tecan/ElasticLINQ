@@ -17,7 +17,7 @@ namespace ElasticLinq
     /// </summary>
     public class ElasticContext : IElasticContext
     {
-        private Lazy<IDictionary<string, string>> _elasticPropertyMappings;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ElasticContext"/> class.
         /// </summary>
@@ -30,13 +30,9 @@ namespace ElasticLinq
             Argument.EnsureNotNull(nameof(connection), connection);
 
             Connection = connection;
-            Mapping = mapping ?? new TrivialElasticMapping();
             Log = log ?? NullLog.Instance;
+            Mapping = mapping ?? new TrivialElasticMapping(connection, Log);
             RetryPolicy = retryPolicy ?? new RetryPolicy(Log);
-            _elasticPropertyMappings= new Lazy<IDictionary<string, string>>(() =>
-            {
-                return connection.GetPropertiesMappings(Log).Result;
-            });
         }
 
         /// <summary>
@@ -49,15 +45,6 @@ namespace ElasticLinq
         /// </summary>
         public ILog Log { get; }
         
-        /// <summary>
-        /// Stores the properties of elasticsearch
-        /// </summary>
-        public IDictionary<string, string> ElasticPropertyMappings { 
-            get
-            {
-                return _elasticPropertyMappings.Value;
-            }
-        }
         /// <summary>
         /// The mapping to describe how objects and their properties are mapped to Elasticsearch.
         /// </summary>

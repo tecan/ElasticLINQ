@@ -3,6 +3,7 @@
 using ElasticLinq.Request.Criteria;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -68,5 +69,10 @@ namespace ElasticLinq.Mapping
         /// <param name="type">The CLR type to get the equivalent Elastic field type for.</param>
         /// <returns>The corresponding Elastic field type.</returns>
         string GetElasticFieldType(Type type);
+
+        /// <summary>
+        /// returns the properties of elasticsearch
+        /// </summary>
+        IDictionary<string, string> ElasticPropertyMappings();
     }
 }

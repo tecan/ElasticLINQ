@@ -1,5 +1,6 @@
 ﻿// Licensed under the Apache 2.0 License. See LICENSE.txt in the project root for more information.
 
+using ElasticLinq.Logging;
 using System;
 
 namespace ElasticLinq.Mapping
@@ -13,9 +14,11 @@ namespace ElasticLinq.Mapping
         /// <summary>
         /// Initializes a new instance of the <see cref="TrivialElasticMapping"/> class.
         /// </summary>
+        public TrivialElasticMapping(IElasticConnection connection,
+                              ILog log) : base(connection, log, false, false, false, false, EnumFormat.String, null) { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TrivialElasticMapping"/> class.
+        /// </summary>
         public TrivialElasticMapping() : base(false, false, false, false, EnumFormat.String, null) { }
-       
-        /// <inheritdoc/>
-        public override string GetDocumentType(Type type) { return null; }
     }
 }

@@ -137,7 +137,7 @@ namespace ElasticLinq
             var builder = new UriBuilder(Endpoint);
             builder.Path += (Index ?? "_all") + "/";
 
-            if (!String.IsNullOrEmpty(searchRequest.DocumentType))
+            if (!String.IsNullOrEmpty(searchRequest.DocumentType) && string.IsNullOrEmpty(Index))
                 builder.Path += searchRequest.DocumentType + "/";
 
             builder.Path += "_search";

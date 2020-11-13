@@ -1,5 +1,6 @@
 ﻿// Licensed under the Apache 2.0 License. See LICENSE.txt in the project root for more information.
 
+using ElasticLinq.Logging;
 using ElasticLinq.Request.Criteria;
 using ElasticLinq.Utility;
 using Newtonsoft.Json;
@@ -35,12 +36,46 @@ namespace ElasticLinq.Mapping
     /// </summary>
     public class ElasticMapping : IElasticMapping
     {
+        private Lazy<IDictionary<string, string>> _elasticPropertyMappings;
         readonly bool camelCaseFieldNames;
         readonly bool camelCaseTypeNames;
         readonly CultureInfo conversionCulture;
         readonly bool lowerCaseAnalyzedFieldValues;
         readonly bool pluralizeTypeNames;
         readonly EnumFormat enumFormat;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ElasticMapping"/> class.
+        /// </summary>
+        /// <param name="connection">The information on how to connect to the Elasticsearch server.</param>
+        /// <param name="log">The object which logs information (optional, defaults to <see cref="NullLog"/>).</param>
+        /// <param name="camelCaseFieldNames">Pass <c>true</c> to automatically camel-case field names (for <see cref="GetFieldName(Type, MemberInfo)"/>).</param>
+        /// <param name="camelCaseTypeNames">Pass <c>true</c> to automatically camel-case type names (for <see cref="GetDocumentType"/>).</param>
+        /// <param name="pluralizeTypeNames">Pass <c>true</c> to automatically pluralize type names (for <see cref="GetDocumentType"/>).</param>
+        /// <param name="lowerCaseAnalyzedFieldValues">Pass <c>true</c> to automatically convert field values to lower case (for <see cref="FormatValue"/>).</param>
+        /// <param name="enumFormat">Pass <c>EnumFormat.String</c> to format enums as strings or <c>EnumFormat.Integer</c> to use integers (defaults to string).</param>
+        /// <param name="conversionCulture">The culture to use for the lower-casing, camel-casing, and pluralization operations. If <c>null</c>,
+        /// uses <see cref="CultureInfo.CurrentCulture"/>.</param>
+        public ElasticMapping(IElasticConnection connection,
+                              ILog log,
+                              bool camelCaseFieldNames = true,
+                              bool camelCaseTypeNames = true,
+                              bool pluralizeTypeNames = true,
+                              bool lowerCaseAnalyzedFieldValues = true,
+                              EnumFormat enumFormat = EnumFormat.String,
+                              CultureInfo conversionCulture = null)
+        {
+            this.camelCaseFieldNames = camelCaseFieldNames;
+            this.camelCaseTypeNames = camelCaseTypeNames;
+            this.pluralizeTypeNames = pluralizeTypeNames;
+            this.lowerCaseAnalyzedFieldValues = lowerCaseAnalyzedFieldValues;
+            this.conversionCulture = conversionCulture ?? CultureInfo.CurrentCulture;
+            this.enumFormat = enumFormat;
+            _elasticPropertyMappings = new Lazy<IDictionary<string, string>>(() =>
+            {
+                return connection.GetPropertiesMappings(log).Result;
+            });
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElasticMapping"/> class.
@@ -143,12 +178,16 @@ namespace ElasticLinq.Mapping
         {
             var jsonPropertyAttribute = memberInfo.GetCustomAttribute<JsonPropertyAttribute>(inherit: true);
 
+            var keywordAttribute = memberInfo.GetCustomAttribute<KeywordAttribute>(inherit: true);
+
             if (jsonPropertyAttribute != null)
                 return jsonPropertyAttribute.PropertyName;
 
-            return camelCaseFieldNames
-                ? memberInfo.Name.ToCamelCase(conversionCulture)
-                : memberInfo.Name;
+            var name = camelCaseFieldNames ? memberInfo.Name.ToCamelCase(conversionCulture) : memberInfo.Name;
+
+            return keywordAttribute==null
+                ? $"{name}"
+                : $"{name}.keyword";
         }
 
         /// <inheritdoc/>
@@ -214,6 +253,14 @@ namespace ElasticLinq.Mapping
                 return fieldType;
 
             throw new NotSupportedException($"CLR Type {type} has no equivalent Elastic field type available");
+        }
+
+        /// <summary>
+        /// returns the properties of elasticsearch
+        /// </summary>
+        public IDictionary<string, string> ElasticPropertyMappings()
+        {
+             return _elasticPropertyMappings!=null? _elasticPropertyMappings.Value: new Dictionary<string,string>();
         }
     }
 }

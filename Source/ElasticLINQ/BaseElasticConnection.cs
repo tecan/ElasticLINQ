@@ -71,11 +71,11 @@ namespace ElasticLinq
         public abstract Uri GetSearchUri(SearchRequest searchRequest);
 
         /// <summary>
-        /// 
+        /// Get mappings from ElasticSearch database
         /// </summary>
         /// <param name="token"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public abstract Task<Dictionary<string, string>> GetPropertiesMappings(ILog log, CancellationToken token = default(CancellationToken));
+        public abstract Task<Dictionary<string, string>> GetPropertiesMappings(ILog log,CancellationToken token = default(CancellationToken));
     }
 }

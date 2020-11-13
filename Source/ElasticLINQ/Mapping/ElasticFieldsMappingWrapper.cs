@@ -61,5 +61,11 @@ namespace ElasticLinq.Mapping
         {
             return wrapped.GetElasticFieldType(type);
         }
+
+        /// <inheritdoc/>
+        public IDictionary<string, string> ElasticPropertyMappings()
+        {
+            return wrapped.ElasticPropertyMappings(); 
+        }
     }
 }

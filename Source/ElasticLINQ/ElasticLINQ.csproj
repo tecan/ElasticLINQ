@@ -69,6 +69,7 @@
     <Compile Include="IElasticConnection.cs" />
     <Compile Include="IElasticContext.cs" />
     <Compile Include="IElasticQuery.cs" />
+    <Compile Include="KeywordAttribute.cs" />
     <Compile Include="Logging\ILog.cs" />
     <Compile Include="Logging\LogExtensions.cs" />
     <Compile Include="Logging\NullLog.cs" />
