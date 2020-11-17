@@ -28,8 +28,6 @@ namespace ElasticLinq
         {
             if (timeout.HasValue)
                 Argument.EnsurePositive(nameof(timeout), timeout.Value);
-            if (index != null)
-                Argument.EnsureNotBlank(nameof(index), index);
 
             Index = index;
             Options = options ?? new ElasticConnectionOptions();
