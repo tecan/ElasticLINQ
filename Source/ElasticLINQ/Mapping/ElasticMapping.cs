@@ -198,8 +198,8 @@ namespace ElasticLinq.Mapping
             var result = type.Name;
             if (pluralizeTypeNames)
                 result = result.ToPlural(conversionCulture);
-            if (camelCaseTypeNames)
-                result = result.ToCamelCase(conversionCulture);
+            
+            result = result.ToLower(conversionCulture);
 
             return result;
         }
