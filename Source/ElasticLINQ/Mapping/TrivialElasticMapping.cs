@@ -15,10 +15,10 @@ namespace ElasticLinq.Mapping
         /// Initializes a new instance of the <see cref="TrivialElasticMapping"/> class.
         /// </summary>
         public TrivialElasticMapping(IElasticConnection connection,
-                              ILog log) : base(connection, log, false, false, false, false, EnumFormat.String, null) { }
+                              ILog log) : base(connection, log, false, false, false, EnumFormat.String, null) { }
         /// <summary>
         /// Initializes a new instance of the <see cref="TrivialElasticMapping"/> class.
         /// </summary>
-        public TrivialElasticMapping() : base(false, false, false, false, EnumFormat.String, null) { }
+        public TrivialElasticMapping() : base(false, false, false, EnumFormat.String, null) { }
     }
 }

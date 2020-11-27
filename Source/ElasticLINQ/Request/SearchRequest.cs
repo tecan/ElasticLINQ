@@ -35,7 +35,7 @@ namespace ElasticLinq.Request
         /// Type of documents to return from Elasticsearch.
         /// </summary>
         /// <remarks>Derived from the T specified in Query&lt;T&gt;.</remarks>
-        public string DocumentType { get; set; }
+        public string IndexType { get; set; }
 
         /// <summary>
         /// List of fields to return for each document instead of the document.

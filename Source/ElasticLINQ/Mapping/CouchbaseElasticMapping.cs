@@ -27,7 +27,7 @@ namespace ElasticLinq.Mapping
         public CouchbaseElasticMapping(bool camelCaseFieldNames = true,
                                        bool lowerCaseAnalyzedFieldValues = true,
                                        CultureInfo conversionCulture = null)
-            : base(camelCaseFieldNames, false, false, lowerCaseAnalyzedFieldValues, EnumFormat.String, conversionCulture) { }
+            : base(camelCaseFieldNames, false, lowerCaseAnalyzedFieldValues, EnumFormat.String, conversionCulture) { }
 
         /// <summary>
         /// Gets the fully document prefix for a given CLR type. Extending this allows you to change
@@ -46,7 +46,7 @@ namespace ElasticLinq.Mapping
         }
 
         /// <inheritdoc/>
-        public override string GetDocumentType(Type type)
+        public override string GetIndexType(Type type)
         {
             return "couchbaseDocument";
         }

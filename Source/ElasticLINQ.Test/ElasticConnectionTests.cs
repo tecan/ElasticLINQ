@@ -142,7 +142,7 @@ namespace ElasticLinq.Test
         {
             var messageHandler = new SpyMessageHandler();
             var localConnection = new ElasticConnection(messageHandler, new Uri("http://localhost"));
-            var request = new SearchRequest { DocumentType = "docType" };
+            var request = new SearchRequest { IndexType = "docType" };
             var formatter = new SearchRequestFormatter(localConnection, mapping, request);
 
             await localConnection.SearchAsync(
@@ -159,7 +159,7 @@ namespace ElasticLinq.Test
         {
             var messageHandler = new SpyMessageHandler();
             var localConnection = new ElasticConnection(messageHandler, new Uri("http://localhost"), "myUser", "myPass");
-            var request = new SearchRequest { DocumentType = "docType" };
+            var request = new SearchRequest { IndexType = "docType" };
             var formatter = new SearchRequestFormatter(localConnection, mapping, request);
 
             await localConnection.SearchAsync(
@@ -180,7 +180,7 @@ namespace ElasticLinq.Test
             var messageHandler = new SpyMessageHandler();
             messageHandler.Response.StatusCode = HttpStatusCode.NotFound;
             var localConnection = new ElasticConnection(messageHandler, new Uri("http://localhost"), "myUser", "myPass");
-            var request = new SearchRequest { DocumentType = "docType" };
+            var request = new SearchRequest { IndexType = "docType" };
             var formatter = new SearchRequestFormatter(localConnection, mapping, request);
 
             var ex = await Record.ExceptionAsync(() => localConnection.SearchAsync(
@@ -249,20 +249,18 @@ namespace ElasticLinq.Test
         [Theory]
         [InlineData(null, null, "http://a.b.com:9000/*/_search")]
         [InlineData("index1,index2", null, "http://a.b.com:9000/index1,index2/_search")]
-        //[InlineData(null, "docType1,docType2", "http://a.b.com:9000/_all/docType1,docType2/_search")]
-        //[InlineData("index1,index2", "docType1,docType2", "http://a.b.com:9000/index1,index2/docType1,docType2/_search")]
         public void UriFormatting(string index, string documentType, string expectedUri)
         {
             var connection = new ElasticConnection(new Uri("http://a.b.com:9000/"), index: index);
 
-            Assert.Equal(expectedUri, connection.GetSearchUri(new SearchRequest { DocumentType = documentType }).ToString());
+            Assert.Equal(expectedUri, connection.GetSearchUri(new SearchRequest { IndexType = documentType }).ToString());
         }
 
         [Fact]
         public void PrettySetsUriQueryWhenNoOtherQueryUriParameters()
         {
             var connection = new ElasticConnection(new Uri("http://coruscant.gov/some"), options: new ElasticConnectionOptions { Pretty = true });
-            var prettyUri = connection.GetSearchUri(new SearchRequest { DocumentType = "type1", Query = criteria });
+            var prettyUri = connection.GetSearchUri(new SearchRequest { IndexType = "type1", Query = criteria });
 
             Assert.Equal("pretty=true", prettyUri.GetComponents(UriComponents.Query, UriFormat.Unescaped));
         }
@@ -272,7 +270,7 @@ namespace ElasticLinq.Test
         {
             var connection = new ElasticConnection(new Uri("http://coruscant.gov/some?human=false"),
                 options: new ElasticConnectionOptions { Pretty = true });
-            var prettyUri = connection.GetSearchUri(new SearchRequest { DocumentType = "type1", Query = criteria });
+            var prettyUri = connection.GetSearchUri(new SearchRequest { IndexType = "type1", Query = criteria });
 
             var parameters = prettyUri.GetComponents(UriComponents.Query, UriFormat.Unescaped).Split('&');
             Assert.Equal(2, parameters.Length);
@@ -286,7 +284,7 @@ namespace ElasticLinq.Test
         {
             var connection = new ElasticConnection(new Uri("http://coruscant.gov/some?pretty=false&human=true"),
                 options: new ElasticConnectionOptions { Pretty = true });
-            var prettyUri = connection.GetSearchUri(new SearchRequest { DocumentType = "type1", Query = criteria });
+            var prettyUri = connection.GetSearchUri(new SearchRequest { IndexType = "type1", Query = criteria });
 
             var parameters = prettyUri.GetComponents(UriComponents.Query, UriFormat.Unescaped).Split('&');
             Assert.Equal(2, parameters.Length);
@@ -299,7 +297,7 @@ namespace ElasticLinq.Test
         {
             var spyLog = new SpyLog();
             var localConnection = new ElasticConnection(new Uri("http://localhost"), index: "SearchIndex");
-            var request = new SearchRequest { DocumentType = "docType" };
+            var request = new SearchRequest { IndexType = "docType" };
             var formatter = new SearchRequestFormatter(localConnection, mapping, request);
 
             var ex = await Record.ExceptionAsync(() => localConnection.SearchAsync(

@@ -33,7 +33,7 @@ namespace ElasticLinq.Mapping
         /// <param name="type">The CLR type whose name is required.</param>
         /// <returns>Returns the Elasticsearch document type name that matches the type; may
         /// return <c>null</c> or empty string to not limit searches to a document type.</returns>
-        string GetDocumentType(Type type);
+        string GetIndexType(Type type);
 
         /// <summary>
         /// Gets the field name for the given member. Extending this allows you to change the

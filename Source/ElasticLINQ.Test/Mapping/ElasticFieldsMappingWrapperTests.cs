@@ -28,9 +28,9 @@ namespace ElasticLinq.Test.Mapping
             var mapping = new ElasticFieldsMappingWrapper(innerMapping);
             var type = typeof(ElasticFieldsMappingWrapperTests);
 
-            mapping.GetDocumentType(type);
+            mapping.GetIndexType(type);
 
-            innerMapping.Received(1).GetDocumentType(type);
+            innerMapping.Received(1).GetIndexType(type);
         }
 
         class Sample { }

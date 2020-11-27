@@ -36,7 +36,7 @@ namespace ElasticLinq.Test.Mapping
         [Fact]
         public static void GetDocumentTypeIsCouchbaseDocument()
         {
-            var result = mapping.GetDocumentType(null);
+            var result = mapping.GetIndexType(null);
 
             Assert.Equal("couchbaseDocument", result);
         }

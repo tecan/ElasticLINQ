@@ -35,7 +35,7 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
             var selected = Robots.Select(r => new { r.Id, r.Cost });
             var searchRequest = ElasticQueryTranslator.Translate(Mapping, selected.Expression).SearchRequest;
 
-            Assert.Equal("robots", searchRequest.DocumentType);
+            Assert.Equal("robots", searchRequest.IndexType);
             Assert.NotNull(searchRequest.Fields);
             Assert.Contains("id", searchRequest.Fields);
             Assert.Contains("cost", searchRequest.Fields);
@@ -50,7 +50,7 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
             var selected = RobotsWithOs.Select(r => new { r.OperatingSystem.Name });
             var searchRequest = ElasticQueryTranslator.Translate(Mapping, selected.Expression).SearchRequest;
 
-            Assert.Equal("robotwithos", searchRequest.DocumentType);
+            Assert.Equal("robotwithos", searchRequest.IndexType);
             Assert.NotNull(searchRequest.Fields);
             Assert.Contains("operatingSystem.name", searchRequest.Fields);
             Assert.Equal(1, searchRequest.Fields.Count);

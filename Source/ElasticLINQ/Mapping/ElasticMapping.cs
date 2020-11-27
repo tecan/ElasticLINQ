@@ -37,12 +37,11 @@ namespace ElasticLinq.Mapping
     public class ElasticMapping : IElasticMapping
     {
         private Lazy<IDictionary<string, string>> _elasticPropertyMappings;
-        readonly bool camelCaseFieldNames;
-        readonly bool camelCaseTypeNames;
-        readonly CultureInfo conversionCulture;
-        readonly bool lowerCaseAnalyzedFieldValues;
-        readonly bool pluralizeTypeNames;
-        readonly EnumFormat enumFormat;
+        readonly bool _camelCaseFieldNames;
+        readonly CultureInfo _conversionCulture;
+        readonly bool _lowerCaseAnalyzedFieldValues;
+        readonly bool _pluralizeTypeNames;
+        readonly EnumFormat _enumFormat;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElasticMapping"/> class.
@@ -50,8 +49,7 @@ namespace ElasticLinq.Mapping
         /// <param name="connection">The information on how to connect to the Elasticsearch server.</param>
         /// <param name="log">The object which logs information (optional, defaults to <see cref="NullLog"/>).</param>
         /// <param name="camelCaseFieldNames">Pass <c>true</c> to automatically camel-case field names (for <see cref="GetFieldName(Type, MemberInfo)"/>).</param>
-        /// <param name="camelCaseTypeNames">Pass <c>true</c> to automatically camel-case type names (for <see cref="GetDocumentType"/>).</param>
-        /// <param name="pluralizeTypeNames">Pass <c>true</c> to automatically pluralize type names (for <see cref="GetDocumentType"/>).</param>
+        /// <param name="pluralizeTypeNames">Pass <c>true</c> to automatically pluralize type names (for <see cref="GetIndexType"/>).</param>
         /// <param name="lowerCaseAnalyzedFieldValues">Pass <c>true</c> to automatically convert field values to lower case (for <see cref="FormatValue"/>).</param>
         /// <param name="enumFormat">Pass <c>EnumFormat.String</c> to format enums as strings or <c>EnumFormat.Integer</c> to use integers (defaults to string).</param>
         /// <param name="conversionCulture">The culture to use for the lower-casing, camel-casing, and pluralization operations. If <c>null</c>,
@@ -59,18 +57,16 @@ namespace ElasticLinq.Mapping
         public ElasticMapping(IElasticConnection connection,
                               ILog log,
                               bool camelCaseFieldNames = true,
-                              bool camelCaseTypeNames = true,
                               bool pluralizeTypeNames = true,
                               bool lowerCaseAnalyzedFieldValues = true,
                               EnumFormat enumFormat = EnumFormat.String,
                               CultureInfo conversionCulture = null)
         {
-            this.camelCaseFieldNames = camelCaseFieldNames;
-            this.camelCaseTypeNames = camelCaseTypeNames;
-            this.pluralizeTypeNames = pluralizeTypeNames;
-            this.lowerCaseAnalyzedFieldValues = lowerCaseAnalyzedFieldValues;
-            this.conversionCulture = conversionCulture ?? CultureInfo.CurrentCulture;
-            this.enumFormat = enumFormat;
+            this._camelCaseFieldNames = camelCaseFieldNames;
+            this._pluralizeTypeNames = pluralizeTypeNames;
+            this._lowerCaseAnalyzedFieldValues = lowerCaseAnalyzedFieldValues;
+            this._conversionCulture = conversionCulture ?? CultureInfo.CurrentCulture;
+            this._enumFormat = enumFormat;
             _elasticPropertyMappings = new Lazy<IDictionary<string, string>>(() =>
             {
                 return connection.GetPropertiesMappings(log).Result;
@@ -81,25 +77,22 @@ namespace ElasticLinq.Mapping
         /// Initializes a new instance of the <see cref="ElasticMapping"/> class.
         /// </summary>
         /// <param name="camelCaseFieldNames">Pass <c>true</c> to automatically camel-case field names (for <see cref="GetFieldName(Type, MemberInfo)"/>).</param>
-        /// <param name="camelCaseTypeNames">Pass <c>true</c> to automatically camel-case type names (for <see cref="GetDocumentType"/>).</param>
-        /// <param name="pluralizeTypeNames">Pass <c>true</c> to automatically pluralize type names (for <see cref="GetDocumentType"/>).</param>
+        /// <param name="pluralizeTypeNames">Pass <c>true</c> to automatically pluralize type names (for <see cref="GetIndexType"/>).</param>
         /// <param name="lowerCaseAnalyzedFieldValues">Pass <c>true</c> to automatically convert field values to lower case (for <see cref="FormatValue"/>).</param>
         /// <param name="enumFormat">Pass <c>EnumFormat.String</c> to format enums as strings or <c>EnumFormat.Integer</c> to use integers (defaults to string).</param>
         /// <param name="conversionCulture">The culture to use for the lower-casing, camel-casing, and pluralization operations. If <c>null</c>,
         /// uses <see cref="CultureInfo.CurrentCulture"/>.</param>
         public ElasticMapping(bool camelCaseFieldNames = true,
-                              bool camelCaseTypeNames = true,
                               bool pluralizeTypeNames = true,
                               bool lowerCaseAnalyzedFieldValues = true,
                               EnumFormat enumFormat = EnumFormat.String,
                               CultureInfo conversionCulture = null)
         {
-            this.camelCaseFieldNames = camelCaseFieldNames;
-            this.camelCaseTypeNames = camelCaseTypeNames;
-            this.pluralizeTypeNames = pluralizeTypeNames;
-            this.lowerCaseAnalyzedFieldValues = lowerCaseAnalyzedFieldValues;
-            this.conversionCulture = conversionCulture ?? CultureInfo.CurrentCulture;
-            this.enumFormat = enumFormat;
+            this._camelCaseFieldNames = camelCaseFieldNames;
+            this._pluralizeTypeNames = pluralizeTypeNames;
+            this._lowerCaseAnalyzedFieldValues = lowerCaseAnalyzedFieldValues;
+            this._conversionCulture = conversionCulture ?? CultureInfo.CurrentCulture;
+            this._enumFormat = enumFormat;
         }
 
         /// <inheritdoc/>
@@ -110,14 +103,14 @@ namespace ElasticLinq.Mapping
             if (value == null)
                 return new JValue((string)null);
 
-            if (enumFormat == EnumFormat.String)
+            if (_enumFormat == EnumFormat.String)
                 value = ReformatValueIfEnum(member, value);
 
             var result = JToken.FromObject(value);
 
-            if (lowerCaseAnalyzedFieldValues && result.Type == JTokenType.String && !IsNotAnalyzed(member))
+            if (_lowerCaseAnalyzedFieldValues && result.Type == JTokenType.String && !IsNotAnalyzed(member))
             {
-                var loweredString = conversionCulture.TextInfo.ToLower(result.Value<string>());
+                var loweredString = _conversionCulture.TextInfo.ToLower(result.Value<string>());
                 result = new JValue(loweredString);
             }
 
@@ -183,7 +176,7 @@ namespace ElasticLinq.Mapping
             if (jsonPropertyAttribute != null)
                 return jsonPropertyAttribute.PropertyName;
 
-            var name = camelCaseFieldNames ? memberInfo.Name.ToCamelCase(conversionCulture) : memberInfo.Name;
+            var name = _camelCaseFieldNames ? memberInfo.Name.ToCamelCase(_conversionCulture) : memberInfo.Name;
 
             return keywordAttribute==null
                 ? $"{name}"
@@ -191,15 +184,15 @@ namespace ElasticLinq.Mapping
         }
 
         /// <inheritdoc/>
-        public virtual string GetDocumentType(Type type)
+        public virtual string GetIndexType(Type type)
         {
             Argument.EnsureNotNull(nameof(type), type);
 
             var result = type.Name;
-            if (pluralizeTypeNames)
-                result = result.ToPlural(conversionCulture);
+            if (_pluralizeTypeNames)
+                result = result.ToPlural(_conversionCulture);
             
-            result = result.ToLower(conversionCulture);
+            result = result.ToLower(_conversionCulture);
 
             return result;
         }

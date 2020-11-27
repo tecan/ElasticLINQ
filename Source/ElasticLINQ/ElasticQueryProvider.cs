@@ -110,7 +110,7 @@ namespace ElasticLinq
 
             var translation = ElasticQueryTranslator.Translate(Mapping, expression);
 
-            Log.Debug(null, null, "Executing query against document '{0}'", translation.SearchRequest.DocumentType);
+            Log.Debug(null, null, "Executing query against document '{0}'", translation.SearchRequest.IndexType);
 
             try
             {

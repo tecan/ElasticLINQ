@@ -30,9 +30,9 @@ namespace ElasticLinq.Mapping
         }
 
         /// <inheritdoc/>
-        public string GetDocumentType(Type type)
+        public string GetIndexType(Type type)
         {
-            return wrapped.GetDocumentType(type);
+            return wrapped.GetIndexType(type);
         }
 
         /// <inheritdoc/>

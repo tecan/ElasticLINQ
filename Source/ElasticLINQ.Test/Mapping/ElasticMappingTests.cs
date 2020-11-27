@@ -132,16 +132,16 @@ namespace ElasticLinq.Test.Mapping
         class PluralTypeNames { }
 
         [Theory]
-        [InlineData(false, false, typeof(SingularTypeName), "singulartypename")]
-        [InlineData(false, true, typeof(SingularTypeName), "singulartypenames")]
-        [InlineData(true, false, typeof(SingularTypeName), "singulartypename")]
-        [InlineData(true, true, typeof(SingularTypeName), "singulartypenames")]
-        [InlineData(true, true, typeof(PluralTypeNames), "pluraltypenames")]
-        public static void GetDocumentType(bool camelCaseTypeNames, bool pluralizeTypeNames, Type type, string expected)
+        [InlineData(false, typeof(SingularTypeName), "singulartypename")]
+        [InlineData(true, typeof(SingularTypeName), "singulartypenames")]
+        [InlineData(false, typeof(SingularTypeName), "singulartypename")]
+        [InlineData(true, typeof(SingularTypeName), "singulartypenames")]
+        [InlineData(true, typeof(PluralTypeNames), "pluraltypenames")]
+        public static void GetDocumentType( bool pluralizeTypeNames, Type type, string expected)
         {
-            var mapping = new ElasticMapping(camelCaseTypeNames: camelCaseTypeNames, pluralizeTypeNames: pluralizeTypeNames);
+            var mapping = new ElasticMapping( pluralizeTypeNames: pluralizeTypeNames);
 
-            var actual = mapping.GetDocumentType(type);
+            var actual = mapping.GetIndexType(type);
 
             Assert.Equal(expected, actual);
         }
@@ -151,7 +151,7 @@ namespace ElasticLinq.Test.Mapping
         {
             var mapping = new ElasticMapping();
 
-            Assert.Throws<ArgumentNullException>(() => mapping.GetDocumentType(null));
+            Assert.Throws<ArgumentNullException>(() => mapping.GetIndexType(null));
         }
 
         [Fact]

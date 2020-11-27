@@ -40,7 +40,7 @@ namespace ElasticLinq.Test.Request
             mockConnection.Options.Returns(new ElasticConnectionOptions());
             mockConnection.Timeout.Returns(TimeSpan.FromSeconds(10));
 
-            var request = new SearchRequest { DocumentType = "abc123", Size = 2112 };
+            var request = new SearchRequest { IndexType = "abc123", Size = 2112 };
             var token = new CancellationToken();
 
             var processor = new ElasticRequestProcessor(mockConnection, mapping, spyLog, retryPolicy);
@@ -60,7 +60,7 @@ namespace ElasticLinq.Test.Request
         [Fact]
         public static async void SearchAsyncThrowsTaskCancelledExceptionWithSubsequentlyCancelledCancellationToken()
         {
-            var request = new SearchRequest { DocumentType = "docType" };
+            var request = new SearchRequest { IndexType = "docType" };
             var processor = new ElasticRequestProcessor(connection, mapping, log, retryPolicy);
 
             var ex = await Record.ExceptionAsync(() => processor.SearchAsync(request, new CancellationTokenSource(500).Token));
@@ -74,7 +74,7 @@ namespace ElasticLinq.Test.Request
             var spyLog = new SpyLog();
             var brokenConnection = new ElasticConnection(new Uri("http://localhost:12"), index: "MyIndex");
             var processor = new ElasticRequestProcessor(brokenConnection, mapping, spyLog, new RetryPolicy(spyLog, 100, 1));
-            var searchRequest = new SearchRequest { DocumentType = "docType" };
+            var searchRequest = new SearchRequest { IndexType = "docType" };
             var formatter = new SearchRequestFormatter(brokenConnection, mapping, searchRequest);
 
             var ex = await Record.ExceptionAsync(() => processor.SearchAsync(searchRequest, CancellationToken.None));

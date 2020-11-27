@@ -67,7 +67,7 @@ namespace ElasticLinq.Request.Visitors
         void CompleteHitTranslation(Expression evaluated)
         {
             Visit(evaluated);
-            searchRequest.DocumentType = Mapping.GetDocumentType(SourceType);
+            searchRequest.IndexType = Mapping.GetIndexType(SourceType);
 
             if (materializer == null)
                 materializer = new ListHitsElasticMaterializer(itemProjector ?? DefaultItemProjector, finalItemType ?? SourceType);

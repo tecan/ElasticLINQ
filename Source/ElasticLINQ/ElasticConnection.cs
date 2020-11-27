@@ -136,8 +136,8 @@ namespace ElasticLinq
         public override Uri GetSearchUri(SearchRequest searchRequest)
         {
             var builder = new UriBuilder(Endpoint);
-            var index = Index + searchRequest.DocumentType;
-            builder.Path += (index ?? "*") + "/";
+            var index = Index + searchRequest.IndexType;
+            builder.Path += string.IsNullOrEmpty(index) ? "*/": $"{index}/";
 
             builder.Path += "_search";
 

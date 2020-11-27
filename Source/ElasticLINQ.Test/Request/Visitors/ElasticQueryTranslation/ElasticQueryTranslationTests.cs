@@ -16,11 +16,11 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
         [Fact]
         public void SearchRequestTypeIsSetFromType()
         {
-            var actual = Mapping.GetDocumentType(typeof(Robot));
+            var actual = Mapping.GetIndexType(typeof(Robot));
 
             var translation = ElasticQueryTranslator.Translate(Mapping, Robots.Expression);
 
-            Assert.Equal(actual, translation.SearchRequest.DocumentType);
+            Assert.Equal(actual, translation.SearchRequest.IndexType);
         }
 
         [Fact]

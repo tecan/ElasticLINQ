@@ -58,7 +58,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/*/_search", request.RawUrl);
+                Assert.Equal("/robot/_search", request.RawUrl);
             }
         }
 
@@ -74,7 +74,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/*/_search", request.RawUrl);
+                Assert.Equal("/robot/_search", request.RawUrl);
             }
         }
 
@@ -91,7 +91,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/*/_search", request.RawUrl);
+                Assert.Equal("/robot/_search", request.RawUrl);
             }
         }
 
@@ -108,7 +108,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/*/_search", request.RawUrl);
+                Assert.Equal("/robot/_search", request.RawUrl);
             }
         }
 
@@ -125,7 +125,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/*/_search", request.RawUrl);
+                Assert.Equal("/robot/_search", request.RawUrl);
                 Assert.NotNull(enumerator);
             }
         }
@@ -143,7 +143,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/*/_search", request.RawUrl);
+                Assert.Equal("/robot/_search", request.RawUrl);
                 Assert.NotNull(enumerator);
             }
         }
