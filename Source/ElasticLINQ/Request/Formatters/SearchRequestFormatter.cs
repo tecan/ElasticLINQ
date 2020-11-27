@@ -96,7 +96,9 @@ namespace ElasticLinq.Request.Formatters
                     : new JObject(new JProperty(sortOption.Name, "desc"));
 
             var properties = new List<JProperty> { new JProperty("unmapped_type", sortOption.UnmappedType) };
-            if (!sortOption.Ascending)
+            if (sortOption.Ascending)
+                properties.Add(new JProperty("order", "asc"));
+            else
                 properties.Add(new JProperty("order", "desc"));
 
             return new JObject(new JProperty(sortOption.Name, new JObject(properties)));
@@ -119,6 +121,9 @@ namespace ElasticLinq.Request.Formatters
             if (criteria is TermCriteria)
                 return Build((TermCriteria)criteria);
 
+            if (criteria is MatchCriteria)
+                return Build((MatchCriteria)criteria);
+
             if (criteria is TermsCriteria)
                 return Build((TermsCriteria)criteria);
 
@@ -127,6 +132,9 @@ namespace ElasticLinq.Request.Formatters
 
             if (criteria is QueryStringCriteria)
                 return Build((QueryStringCriteria)criteria);
+
+            if (criteria is WildCardCriteria)
+                return Build((WildCardCriteria)criteria);
 
             if (criteria is MatchAllCriteria)
                 return Build((MatchAllCriteria)criteria);
@@ -174,6 +182,13 @@ namespace ElasticLinq.Request.Formatters
             return new JObject(new JProperty(criteria.Name, queryStringCriteria));
         }
 
+        static JObject Build(WildCardCriteria criteria)
+        {
+            return new JObject(
+                new JProperty(criteria.Name, new JObject(
+                    new JProperty(criteria.Field, criteria.Value))));
+        }
+
         JObject Build(RangeCriteria criteria)
         {
             // Range filters can be combined by field
@@ -195,6 +210,13 @@ namespace ElasticLinq.Request.Formatters
         }
 
         JObject Build(TermCriteria criteria)
+        {
+            return new JObject(
+                new JProperty(criteria.Name, new JObject(
+                    new JProperty(criteria.Field, mapping.FormatValue(criteria.Member, criteria.Value)))));
+        }
+
+        JObject Build(MatchCriteria criteria)
         {
             return new JObject(
                 new JProperty(criteria.Name, new JObject(

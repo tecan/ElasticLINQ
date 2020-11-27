@@ -294,7 +294,7 @@ namespace ElasticLinq.Request.Visitors
             {
                 var field = Mapping.GetFieldName(SourceType, (MemberExpression)source);
                 var value = ((ConstantExpression)matched).Value;
-                return new CriteriaExpression(new QueryStringCriteria(string.Format(pattern, value), field));
+                return new CriteriaExpression(new WildCardCriteria(string.Format(pattern, value), field));
             }
 
             throw new NotSupportedException(source is MemberExpression
@@ -360,11 +360,14 @@ namespace ElasticLinq.Request.Visitors
                 return booleanEquals;
 
             var cm = ConstantMemberPair.Create(left, right);
+            var propertyMappings = Mapping.ElasticPropertyMappings();
+
+            
 
             if (cm != null)
                 return cm.IsNullTest
                     ? CreateExists(cm, true)
-                    : new CriteriaExpression(new TermCriteria(Mapping.GetFieldName(SourceType, cm.MemberExpression), cm.MemberExpression.Member, cm.ConstantExpression.Value));
+                    : VisitCriteriaEqualsForFields(cm);
 
             throw new NotSupportedException("Equality must be between a Member and a Constant");
         }
@@ -408,7 +411,28 @@ namespace ElasticLinq.Request.Visitors
 
             return cm.IsNullTest
                 ? CreateExists(cm, false)
-                : new CriteriaExpression(NotCriteria.Create(new TermCriteria(Mapping.GetFieldName(SourceType, cm.MemberExpression), cm.MemberExpression.Member, cm.ConstantExpression.Value)));
+                : VisitCriteriaEqualsForFields(cm,false);
+        }
+
+        Expression VisitCriteriaEqualsForFields(ConstantMemberPair constantMemberPair, bool equal=true)
+        {
+            var fieldName = Mapping.GetFieldName(SourceType, constantMemberPair.MemberExpression);
+            var propertyMappings = Mapping.ElasticPropertyMappings();
+
+            ICriteria criteria;
+
+            if (propertyMappings.TryGetValue(fieldName, out var propertyType) && propertyType == "text")
+            {
+                criteria=  new MatchCriteria(
+                    Mapping.GetFieldName(SourceType, constantMemberPair.MemberExpression),
+                    constantMemberPair.MemberExpression.Member, constantMemberPair.ConstantExpression.Value);
+            }
+            else
+             criteria= new TermCriteria(Mapping.GetFieldName(SourceType, constantMemberPair.MemberExpression),
+                constantMemberPair.MemberExpression.Member, constantMemberPair.ConstantExpression.Value);
+
+            if (!equal) criteria = NotCriteria.Create(criteria);
+            return new CriteriaExpression(criteria);
         }
 
         Expression VisitRange(RangeComparison rangeComparison, Expression left, Expression right)

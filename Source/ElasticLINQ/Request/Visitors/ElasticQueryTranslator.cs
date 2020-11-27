@@ -250,7 +250,6 @@ namespace ElasticLinq.Request.Visitors
         Expression VisitCount(Expression source, Expression predicate, Type returnType)
         {
             materializer = new CountElasticMaterializer(returnType);
-            searchRequest.Size = 0;
             return predicate != null
                 ? VisitWhere(source, predicate)
                 : Visit(source);
@@ -310,6 +309,21 @@ namespace ElasticLinq.Request.Visitors
             if (final != null)
             {
                 var fieldName = Mapping.GetFieldName(SourceType, final);
+
+                var propertyMappings = Mapping.ElasticPropertyMappings();
+
+                if(propertyMappings.TryGetValue(fieldName,out var propertyType) && propertyType == "text")
+                {
+                    var keywordName = ".keyword";
+                    if (!fieldName.EndsWith(keywordName))
+                    {
+                        fieldName = $"{fieldName}{keywordName}";
+                        if (!propertyMappings.ContainsKey(fieldName))
+                        {
+                            throw new NotSupportedException("This property is not supported");
+                        }
+                    }
+                }
 
                 var sortFieldType = final.Type.IsGenericOf(typeof(Nullable<>))
                     ? final.Type.GenericTypeArguments[0]
