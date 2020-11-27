@@ -21,7 +21,7 @@ namespace ElasticLinq.Test.Request.Visitors
 
             public Sample Nested { get; set; }
         }
-        readonly IElasticMapping validMapping = new TrivialElasticMapping();
+        readonly IElasticMapping validMapping = new ElasticMapping(camelCaseFieldNames:true);
 
         [Fact]
         public void Rebind_GuardClauses()

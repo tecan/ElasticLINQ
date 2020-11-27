@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ElasticLinq.IntegrationTest.Models;
+using ElasticLinq.Logging;
 using ElasticLinq.Mapping;
 using ElasticLinq.Retry;
 
@@ -15,11 +16,10 @@ namespace ElasticLinq.IntegrationTest
     {
         public static readonly Uri Endpoint = new Uri("http://localhost:9200/");
 
-        const string Index = "integrationtest";
+        const string Index = "";
         static readonly ElasticConnectionOptions options = new ElasticConnectionOptions { SearchSizeDefault = 1000, Pretty = true };
         static readonly IElasticConnection connection = new BreakOnInvalidQueryConnection(Endpoint, index: Index, options: options);
-
-        readonly ElasticContext elasticContext = new ElasticContext(connection, new TrivialElasticMapping(), retryPolicy: new NoRetryPolicy());
+        readonly ElasticContext elasticContext = new ElasticContext(connection, new TrivialElasticMapping(connection,NullLog.Instance), retryPolicy: new NoRetryPolicy());
         readonly List<object> memory = new List<object>();
 
         public IQueryable<T> Elastic<T>()

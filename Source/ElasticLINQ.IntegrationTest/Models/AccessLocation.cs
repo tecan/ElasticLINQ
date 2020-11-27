@@ -4,6 +4,7 @@ namespace ElasticLinq.IntegrationTest.Models
 {
     class AccessLocation : IEquatable<AccessLocation>
     {
+        public string Country { get; set; }
         public string City { get; set; }
         public string State { get; set; }
         public string Zip { get; set; }
@@ -12,7 +13,8 @@ namespace ElasticLinq.IntegrationTest.Models
 
         public bool Equals(AccessLocation other)
         {
-            return Equals(Zip, other.Zip) &&
+            return Equals(Country, other.Country) &&
+                   Equals(Zip, other.Zip) &&
                    Equals(City, other.City) &&
                    Equals(State, other.State) &&
                    Equals(Latitude, other.Latitude) &&

@@ -58,7 +58,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/_all/robots/_search", request.RawUrl);
+                Assert.Equal("/*/_search", request.RawUrl);
             }
         }
 
@@ -74,7 +74,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/_all/robots/_search", request.RawUrl);
+                Assert.Equal("/*/_search", request.RawUrl);
             }
         }
 
@@ -91,7 +91,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/_all/robots/_search", request.RawUrl);
+                Assert.Equal("/*/_search", request.RawUrl);
             }
         }
 
@@ -108,7 +108,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/_all/robots/_search", request.RawUrl);
+                Assert.Equal("/*/_search", request.RawUrl);
             }
         }
 
@@ -125,7 +125,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/_all/robots/_search", request.RawUrl);
+                Assert.Equal("/*/_search", request.RawUrl);
                 Assert.NotNull(enumerator);
             }
         }
@@ -143,7 +143,7 @@ namespace ElasticLinq.Test.Integration
                 await httpStub.Completion;
                 var request = httpStub.Requests.Single();
                 Assert.Equal("POST", request.HttpMethod);
-                Assert.Equal("/_all/robots/_search", request.RawUrl);
+                Assert.Equal("/*/_search", request.RawUrl);
                 Assert.NotNull(enumerator);
             }
         }
@@ -174,7 +174,7 @@ namespace ElasticLinq.Test.Integration
                 took = 1,
                 timed_out = false,
                 _shards = new { total = 5, successful = 5, failed = 0 },
-                hits = new { total = 0, max_score = (string)null, hits = new object[0] }
+                hits = new { total = new { value= 2}, max_score = (string)null, hits = new object[0] }
             };
 
             context.Response.Write(JObject.FromObject(response).ToString(Formatting.None));

@@ -36,7 +36,7 @@ namespace ElasticLinq.Test
         public static void GuardClauses_Constructor()
         {
             Assert.Throws<ArgumentNullException>(() => new ElasticConnection(null));
-            Assert.Throws<ArgumentException>(() => new ElasticConnection(new Uri("http://localhost/"), index: ""));
+            //Assert.Throws<ArgumentException>(() => new ElasticConnection(new Uri("http://localhost/"), index: ""));
         }
 
         [Fact]
@@ -201,7 +201,7 @@ namespace ElasticLinq.Test
             var spyLog = new SpyLog();
             messageHandler.Response.Content = new StringContent(responseString);
             var localConnection = new ElasticConnection(messageHandler, new Uri("http://localhost"), "myUser", "myPass", index: "SearchIndex");
-            var request = new SearchRequest { DocumentType = "abc123", Size = 2112 };
+            var request = new SearchRequest { Size = 2112 };
             var formatter = new SearchRequestFormatter(localConnection, mapping, request);
 
             await localConnection.SearchAsync(
@@ -211,7 +211,7 @@ namespace ElasticLinq.Test
                 spyLog);
 
             Assert.Equal(4, spyLog.Entries.Count);
-            Assert.Equal(@"Request: POST http://localhost/SearchIndex/abc123/_search", spyLog.Entries[0].Message);
+            Assert.Equal(@"Request: POST http://localhost/SearchIndex/_search", spyLog.Entries[0].Message);
             Assert.Equal(@"Body:" + '\n' + @"{""size"":2112,""timeout"":""10s""}", spyLog.Entries[1].Message);
             Assert.True(new Regex(@"Response: 200 OK \(in \d+ms\)").Match(spyLog.Entries[2].Message).Success);
             Assert.True(new Regex(@"Deserialized \d+ bytes into 1 hits in \d+ms").Match(spyLog.Entries[3].Message).Success);
@@ -247,10 +247,10 @@ namespace ElasticLinq.Test
         }
 
         [Theory]
-        [InlineData(null, null, "http://a.b.com:9000/_all/_search")]
+        [InlineData(null, null, "http://a.b.com:9000/*/_search")]
         [InlineData("index1,index2", null, "http://a.b.com:9000/index1,index2/_search")]
-        [InlineData(null, "docType1,docType2", "http://a.b.com:9000/_all/docType1,docType2/_search")]
-        [InlineData("index1,index2", "docType1,docType2", "http://a.b.com:9000/index1,index2/docType1,docType2/_search")]
+        //[InlineData(null, "docType1,docType2", "http://a.b.com:9000/_all/docType1,docType2/_search")]
+        //[InlineData("index1,index2", "docType1,docType2", "http://a.b.com:9000/index1,index2/docType1,docType2/_search")]
         public void UriFormatting(string index, string documentType, string expectedUri)
         {
             var connection = new ElasticConnection(new Uri("http://a.b.com:9000/"), index: index);
@@ -318,7 +318,7 @@ namespace ElasticLinq.Test
                                  "\"_shards\":{\"total\":" + shards + "," +
                                  "\"successful\":" + shards + "" +
                                  ",\"failed\":0}," +
-                                 "\"hits\":{\"total\":" + hits + "," +
+                                 "\"hits\":{\"total\":{\"value\":" + hits + "}," +
                                  "\"max_score\":" + score + ",\"hits\":" +
                                  "[{\"_index\":\"" + index + "\"," +
                                  "\"_type\":\"" + type + "\"," +

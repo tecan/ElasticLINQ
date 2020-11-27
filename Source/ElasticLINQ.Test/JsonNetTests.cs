@@ -35,7 +35,7 @@ namespace ElasticLinq.Test
         [Fact]
         public static void CustomTypes_Terms()
         {
-            var context = new TestableElasticContext();
+            var context = new TestableElasticContext(new ElasticMapping(lowerCaseAnalyzedFieldValues:true));
             var identifiers = new[] { new Identifier("vALue1"), new Identifier("ValuE2") };
 
             var queryInfo = context.Query<ClassWithIdentifier>().Where(x => identifiers.Contains(x.id)).ToQueryInfo();

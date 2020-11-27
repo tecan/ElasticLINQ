@@ -132,11 +132,11 @@ namespace ElasticLinq.Test.Mapping
         class PluralTypeNames { }
 
         [Theory]
-        [InlineData(false, false, typeof(SingularTypeName), "SingularTypeName")]
-        [InlineData(false, true, typeof(SingularTypeName), "SingularTypeNames")]
-        [InlineData(true, false, typeof(SingularTypeName), "singularTypeName")]
-        [InlineData(true, true, typeof(SingularTypeName), "singularTypeNames")]
-        [InlineData(true, true, typeof(PluralTypeNames), "pluralTypeNames")]
+        [InlineData(false, false, typeof(SingularTypeName), "singulartypename")]
+        [InlineData(false, true, typeof(SingularTypeName), "singulartypenames")]
+        [InlineData(true, false, typeof(SingularTypeName), "singulartypename")]
+        [InlineData(true, true, typeof(SingularTypeName), "singulartypenames")]
+        [InlineData(true, true, typeof(PluralTypeNames), "pluraltypenames")]
         public static void GetDocumentType(bool camelCaseTypeNames, bool pluralizeTypeNames, Type type, string expected)
         {
             var mapping = new ElasticMapping(camelCaseTypeNames: camelCaseTypeNames, pluralizeTypeNames: pluralizeTypeNames);

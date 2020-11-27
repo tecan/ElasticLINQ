@@ -14,7 +14,7 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
     public class ElasticQueryTranslationTestsBase
     {
         protected static readonly ElasticConnection Connection = new ElasticConnection(new Uri("http://localhost"));
-        protected static readonly IElasticMapping Mapping = new TrivialElasticMapping();
+        protected static readonly IElasticMapping Mapping = new ElasticMapping(camelCaseFieldNames:true,camelCaseTypeNames:true, pluralizeTypeNames:true);
         protected static readonly IElasticMapping CouchMapping = new CouchbaseElasticMapping();
         protected static readonly ILog Log = NullLog.Instance;
         protected static readonly IRetryPolicy RetryPolicy = NullRetryPolicy.Instance;

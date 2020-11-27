@@ -122,8 +122,8 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
             var first = MakeQueryableExpression("Count", Robots);
 
             var request = ElasticQueryTranslator.Translate(CouchMapping, first).SearchRequest;
-
-            Assert.Equal(0, request.Size);
+            //Size should be not there in count query 
+            //Assert.Equal(0, request.Size);
             Assert.IsType<ExistsCriteria>(request.Query);
         }
 
@@ -135,8 +135,8 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
             var first = MakeQueryableExpression("Count", Robots, lambda);
 
             var request = ElasticQueryTranslator.Translate(Mapping, first).SearchRequest;
-
-            Assert.Equal(0, request.Size);
+            //Size should be not there in count query 
+            //Assert.Equal(0, request.Size);
             var termCriteria = Assert.IsType<TermCriteria>(request.Query);
             Assert.Equal("name", termCriteria.Field);
             Assert.Equal(expectedTermValue, termCriteria.Value);
@@ -148,8 +148,8 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
             var first = MakeQueryableExpression("LongCount", Robots);
 
             var request = ElasticQueryTranslator.Translate(CouchMapping, first).SearchRequest;
-
-            Assert.Equal(0, request.Size);
+            //Size should be not there in count query 
+           // Assert.Equal(0, request.Size);
             Assert.IsType<ExistsCriteria>(request.Query);
         }
 
@@ -161,8 +161,8 @@ namespace ElasticLinq.Test.Request.Visitors.ElasticQueryTranslation
             var first = MakeQueryableExpression("LongCount", Robots, lambda);
 
             var request = ElasticQueryTranslator.Translate(Mapping, first).SearchRequest;
-
-            Assert.Equal(0, request.Size);
+            //Size should be not there in count query 
+            //Assert.Equal(0, request.Size);
             var termCriteria = Assert.IsType<TermCriteria>(request.Query);
             Assert.Equal("name", termCriteria.Field);
             Assert.Equal(expectedTermValue, termCriteria.Value);

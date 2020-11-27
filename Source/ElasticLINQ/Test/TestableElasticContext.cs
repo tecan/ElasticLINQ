@@ -30,7 +30,7 @@ namespace ElasticLinq.Test
                                       TimeSpan timeout = default(TimeSpan))
         {
             Connection = new ElasticConnection(new Uri("http://localhost/"), timeout: timeout);
-            Mapping = mapping ?? new TrivialElasticMapping();
+            Mapping = mapping ?? new ElasticMapping(true,true,true,true);
             Provider = new TestableElasticQueryProvider(this);
             Requests = new List<QueryInfo>();
             Log = log ?? NullLog.Instance;
