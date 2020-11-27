@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -135,11 +136,8 @@ namespace ElasticLinq
         public override Uri GetSearchUri(SearchRequest searchRequest)
         {
             var builder = new UriBuilder(Endpoint);
-
-            if(!string.IsNullOrEmpty(Index))
-                builder.Path += Index + "/";
-            else if (!string.IsNullOrEmpty(searchRequest.DocumentType))
-                builder.Path += searchRequest.DocumentType + "/";
+            var index = Index + searchRequest.DocumentType;
+            builder.Path += (index ?? "*") + "/";
 
             builder.Path += "_search";
 
@@ -216,7 +214,7 @@ namespace ElasticLinq
                             using (var textReader = new JsonTextReader(new StreamReader(responseStream)))
                             {
                                 JObject responseBody = new JsonSerializer().Deserialize<JObject>(textReader);
-                                ParseMappingResponse(responseBody.First, propertMappings);
+                                if (responseBody != null) ParseMappingResponse(responseBody.First, propertMappings);
                             }
                         }
                     }
@@ -236,7 +234,7 @@ namespace ElasticLinq
         private Uri GetMappingUri()
         {
             var builder = new UriBuilder(Endpoint);
-            builder.Path += (Index ?? "_all") + "/";
+            builder.Path += (Index ?? "*") + "/";
 
             builder.Path += "_mapping";
 
@@ -247,8 +245,12 @@ namespace ElasticLinq
         {
             if (index != null)
             {
-                var propertiesObject = index.First["mappings"]?["properties"];
-                FetchProperties(propertiesObject, propertMappings);
+                if (index.First != null)
+                {
+                    var propertiesObject = index.First["mappings"]?["properties"];
+                    FetchProperties(propertiesObject, propertMappings);
+                }
+
                 return ParseMappingResponse(index.Next, propertMappings);
             }
             else

@@ -43,8 +43,8 @@
     <AssemblyOriginatorKeyFile>..\ElasticLINQ.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -82,6 +82,7 @@
     <Compile Include="Request\Criteria\BoolCriteria.cs" />
     <Compile Include="Request\Criteria\AndCriteria.cs" />
     <Compile Include="Request\Criteria\CompoundCriteria.cs" />
+    <Compile Include="Request\Criteria\MatchCriteria.cs" />
     <Compile Include="Request\Criteria\QueryCriteriaRewriter.cs" />
     <Compile Include="Request\Criteria\ConstantCriteriaFilterReducer.cs" />
     <Compile Include="Request\Criteria\ConstantCriteria.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Request\Criteria\SingleFieldCriteria.cs" />
     <Compile Include="Request\Criteria\QueryStringCriteria.cs" />
     <Compile Include="Request\Criteria\TermCriteria.cs" />
+    <Compile Include="Request\Criteria\WildCardCriteria.cs" />
     <Compile Include="Request\QueryInfo.cs" />
     <Compile Include="Request\Formatters\SearchRequestFormatter.cs" />
     <Compile Include="Request\Expressions\ElasticExpressionType.cs" />
@@ -155,9 +157,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
