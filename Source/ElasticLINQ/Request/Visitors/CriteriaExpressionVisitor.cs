@@ -54,9 +54,9 @@ namespace ElasticLinq.Request.Visitors
                     if (m.Arguments.Count == 1)
                         return VisitEquals(Visit(m.Object), Visit(m.Arguments[0]));
                     if (m.Arguments.Count == 2)
-                        return VisitEquals(Visit(m.Arguments[0]), Visit(m.Arguments[1]));
+                        if(TypeHelper.IsStringComparisonType(m.Arguments[1])) return VisitEquals(Visit(m.Object), Visit(m.Arguments[0]));
+                        else return VisitEquals(Visit(m.Arguments[0]), Visit(m.Arguments[1]));
                     break;
-
                 case "Contains":
                     if (TypeHelper.FindIEnumerable(m.Method.DeclaringType) != null)
                         return VisitEnumerableContainsMethodCall(m.Object, m.Arguments[0]);

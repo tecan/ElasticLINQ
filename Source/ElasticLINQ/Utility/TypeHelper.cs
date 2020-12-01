@@ -167,5 +167,10 @@ namespace ElasticLinq.Utility
         {
             return methodInfo.ToString().Substring(methodInfo.ReturnType.ToString().Length + 1);
         }
+
+        public static bool IsStringComparisonType(Expression sequenceType)
+        {
+            return sequenceType.Type.Name.Equals("StringComparison",StringComparison.OrdinalIgnoreCase);
+        }
     }
 }
