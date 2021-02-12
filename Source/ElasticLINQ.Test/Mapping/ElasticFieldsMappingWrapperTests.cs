@@ -1,6 +1,7 @@
 ﻿// Licensed under the Apache 2.0 License. See LICENSE.txt in the project root for more information.
 
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using ElasticLinq.Mapping;
 using NSubstitute;
 using Xunit;
@@ -45,10 +46,10 @@ namespace ElasticLinq.Test.Mapping
             var member = typeof(ElasticFields).GetProperty(propertyName);
             var memberExpression = Expression.MakeMemberAccess(null, member);
 
-            var result = mapping.GetFieldName(typeof(Sample), memberExpression);
+            mapping.TryGetFieldName(typeof(Sample), memberExpression,out string result);
 
             Assert.Equal(expectedValue, result);
-            innerMapping.Received(0).GetFieldName(typeof(Sample), memberExpression);
+            innerMapping.Received(0).TryGetFieldName(typeof(Sample), memberExpression,out result);
         }
 
         [Fact]
@@ -60,9 +61,9 @@ namespace ElasticLinq.Test.Mapping
             var constantExpression = Expression.Constant("string value");
             var memberExpression = Expression.MakeMemberAccess(constantExpression, member);
 
-            mapping.GetFieldName(typeof(Sample), memberExpression);
+            mapping.TryGetFieldName(typeof(Sample), memberExpression,out string result);
 
-            innerMapping.Received(1).GetFieldName(typeof(Sample), memberExpression);
+            innerMapping.Received(1).TryGetFieldName(typeof(Sample), memberExpression, out result);
         }
 
         [Fact]

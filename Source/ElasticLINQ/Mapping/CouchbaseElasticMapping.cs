@@ -91,5 +91,11 @@ namespace ElasticLinq.Mapping
         {
             return base.Materialize(sourceDocument.SelectToken(GetDocumentMappingPrefix(sourceType)), sourceType);
         }
+
+        /// <inheritdoc/>
+        public override object Materialize(string id,JToken sourceDocument, Type sourceType)
+        {
+            return base.Materialize(id, sourceDocument.SelectToken(GetDocumentMappingPrefix(sourceType)), sourceType);
+        }
     }
 }

@@ -139,7 +139,10 @@ namespace ElasticLinq.Request.Visitors
                 materializer = new HighlightElasticMaterializer(materializer);
             }
 
-            searchRequest.Highlight.AddFields(Mapping.GetFieldName(SourceType, bodyExpression));
+            if (Mapping.TryGetFieldName(SourceType, bodyExpression, out string fieldName))
+            {
+                searchRequest.Highlight.AddFields(fieldName);
+            }
 
             return Visit(source);
         }
@@ -250,6 +253,8 @@ namespace ElasticLinq.Request.Visitors
         Expression VisitCount(Expression source, Expression predicate, Type returnType)
         {
             materializer = new CountElasticMaterializer(returnType);
+            searchRequest.Size = 0;
+            searchRequest.TrackTotalHits = true;
             return predicate != null
                 ? VisitWhere(source, predicate)
                 : Visit(source);
@@ -308,31 +313,33 @@ namespace ElasticLinq.Request.Visitors
             var final = Visit(lambda.Body) as MemberExpression;
             if (final != null)
             {
-                var fieldName = Mapping.GetFieldName(SourceType, final);
-
-                var propertyMappings = Mapping.ElasticPropertyMappings();
-
-                if(propertyMappings.TryGetValue(fieldName,out var propertyType) && propertyType == "text")
+                if (Mapping.TryGetFieldName(SourceType, final, out string fieldName))
                 {
-                    var keywordName = ".keyword";
-                    if (!fieldName.EndsWith(keywordName))
+                    var propertyMappings = Mapping.ElasticPropertyMappings();
+
+                    if (propertyMappings.TryGetValue(fieldName, out var propertyType) && propertyType == "text")
                     {
-                        fieldName = $"{fieldName}{keywordName}";
-                        if (!propertyMappings.ContainsKey(fieldName))
+                        var keywordName = ".keyword";
+                        if (!fieldName.EndsWith(keywordName))
                         {
-                            throw new NotSupportedException("This property is not supported");
+                            fieldName = $"{fieldName}{keywordName}";
+                            if (!propertyMappings.ContainsKey(fieldName))
+                            {
+                                throw new NotSupportedException("This property is not supported");
+                            }
                         }
                     }
+
+                    var sortFieldType = final.Type.IsGenericOf(typeof(Nullable<>))
+                        ? final.Type.GenericTypeArguments[0]
+                        : final.Type;
+
+                    var sortOption = new SortOption(fieldName, ascending,
+                        final.Type.IsNullable() ? Mapping.GetElasticFieldType(sortFieldType) : null);
+
+                    searchRequest.SortOptions.Insert(0, sortOption);
+
                 }
-
-                var sortFieldType = final.Type.IsGenericOf(typeof(Nullable<>))
-                    ? final.Type.GenericTypeArguments[0]
-                    : final.Type;
-
-                var sortOption = new SortOption(fieldName, ascending,
-                    final.Type.IsNullable() ? Mapping.GetElasticFieldType(sortFieldType) : null);
-
-                searchRequest.SortOptions.Insert(0, sortOption);
             }
 
             return Visit(source);
@@ -429,7 +436,7 @@ namespace ElasticLinq.Request.Visitors
 
         Func<Hit, object> DefaultItemProjector
         {
-            get { return hit => Mapping.Materialize(hit._source, SourceType); }
+            get { return hit => Mapping.Materialize(hit._id, hit._source, SourceType); }
         }
     }
 }

@@ -36,15 +36,6 @@ namespace ElasticLinq.Mapping
         }
 
         /// <inheritdoc/>
-        public string GetFieldName(Type type, MemberExpression memberExpression)
-        {
-            return
-                memberExpression.Member.DeclaringType == typeof(ElasticFields)
-                    ? "_" + memberExpression.Member.Name.ToLowerInvariant()
-                    : wrapped.GetFieldName(type, memberExpression);
-        }
-
-        /// <inheritdoc/>
         public ICriteria GetTypeSelectionCriteria(Type type)
         {
             return wrapped.GetTypeSelectionCriteria(type);
@@ -57,6 +48,12 @@ namespace ElasticLinq.Mapping
         }
 
         /// <inheritdoc/>
+        public object Materialize(string id,JToken sourceDocument, Type objectType)
+        {
+            return wrapped.Materialize(id,sourceDocument, objectType);
+        }
+
+        /// <inheritdoc/>
         public string GetElasticFieldType(Type type)
         {
             return wrapped.GetElasticFieldType(type);
@@ -66,6 +63,21 @@ namespace ElasticLinq.Mapping
         public IDictionary<string, string> ElasticPropertyMappings()
         {
             return wrapped.ElasticPropertyMappings(); 
+        }
+
+        public bool TryGetFieldName(Type type, Expression expression, out string fieldName)
+        {
+            fieldName = null;
+            var isElasticType = expression is MemberExpression memberExpression &&
+                                memberExpression.Member.DeclaringType == typeof(ElasticFields);
+
+            var isFieldNameAvailable= isElasticType || wrapped.TryGetFieldName(type, expression, out fieldName);
+
+            fieldName= isElasticType
+                    ? "_" + ((MemberExpression)expression).Member.Name.ToLowerInvariant()
+                    : fieldName;
+
+            return isFieldNameAvailable;
         }
     }
 }

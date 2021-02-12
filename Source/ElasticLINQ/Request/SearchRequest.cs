@@ -2,6 +2,8 @@
 
 using ElasticLinq.Request.Criteria;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace ElasticLinq.Request
 {
@@ -63,5 +65,10 @@ namespace ElasticLinq.Request
         /// Specify the highlighting to be applied to the results.
         /// </summary>
         public Highlight Highlight { get; set; }
+
+        /// <summary>
+        /// Specifying tracking total count
+        /// </summary>
+        public bool? TrackTotalHits { get; set; }
     }
 }

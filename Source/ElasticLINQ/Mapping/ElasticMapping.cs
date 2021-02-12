@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -98,7 +99,7 @@ namespace ElasticLinq.Mapping
         /// <inheritdoc/>
         public virtual JToken FormatValue(MemberInfo member, object value)
         {
-            Argument.EnsureNotNull(nameof(member), member);
+            if (member == null) return JToken.FromObject(value);
 
             if (value == null)
                 return new JValue((string)null);
@@ -221,6 +222,12 @@ namespace ElasticLinq.Mapping
             return sourceDocument.ToObject(sourceType);
         }
 
+        /// <inheritedDoc />
+        public virtual object Materialize(string id, JToken sourceDocument, Type sourceType)
+        {
+            return sourceDocument.ToObject(sourceType);
+        }
+
         /// <summary>
         /// Basic set of mappings from CLR types to Elastic field types.
         /// </summary>
@@ -254,6 +261,24 @@ namespace ElasticLinq.Mapping
         public IDictionary<string, string> ElasticPropertyMappings()
         {
              return _elasticPropertyMappings!=null? _elasticPropertyMappings.Value: new Dictionary<string,string>();
+        }
+
+        /// <inheritedDoc />
+        public bool TryGetFieldName(Type type, Expression expression, out string fieldName)
+        {
+            fieldName = null;
+            if (expression is MemberExpression memberExpression)
+            {
+                fieldName = GetFieldName(type, memberExpression);
+            }
+
+            if (expression is MethodCallExpression methodCallExpression && methodCallExpression.Method.IsSpecialName)
+            {
+                var methodInfoExpression = (ConstantExpression)methodCallExpression.Arguments.Last();
+                fieldName = $"@{(string)methodInfoExpression.Value}";
+            }
+
+            return !string.IsNullOrEmpty(fieldName);
         }
     }
 }

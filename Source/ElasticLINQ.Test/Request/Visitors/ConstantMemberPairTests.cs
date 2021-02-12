@@ -49,7 +49,7 @@ namespace ElasticLinq.Test.Request.Visitors
 
             Assert.NotNull(result);
             Assert.Same(constantExpression, result.ConstantExpression);
-            Assert.Same(memberExpression, result.MemberExpression);
+            Assert.Same(memberExpression, result.Expression);
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace ElasticLinq.Test.Request.Visitors
 
             Assert.NotNull(result);
             Assert.Same(constantExpression, result.ConstantExpression);
-            Assert.Same(memberExpression, result.MemberExpression);
+            Assert.Same(memberExpression, result.Expression);
         }
     }
 }

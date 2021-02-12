@@ -61,8 +61,10 @@ namespace ElasticLinq.Request.Visitors
 
         Expression VisitFieldSelection(MemberExpression m)
         {
-            var fieldName = Mapping.GetFieldName(SourceType, m);
-            fieldNames.Add(fieldName);
+            if (Mapping.TryGetFieldName(SourceType, m, out string fieldName))
+            {
+                fieldNames.Add(fieldName);
+            }
             var getFieldExpression = Expression.Call(null, GetKeyedValueMethod, Expression.PropertyOrField(BindingParameter, "_source"), Expression.Constant(fieldName), Expression.Constant(m.Type));
             return Expression.Convert(getFieldExpression, m.Type);
         }

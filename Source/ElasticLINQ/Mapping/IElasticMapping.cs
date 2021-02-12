@@ -41,9 +41,10 @@ namespace ElasticLinq.Mapping
         /// will need to match the serialization rules you use when storing your documents.
         /// </summary>
         /// <param name="type">The CLR type used in the source query.</param>
-        /// <param name="memberExpression">The member expression whose name is required.</param>
-        /// <returns>Returns the Elasticsearch field name that matches the member.</returns>
-        string GetFieldName(Type type, MemberExpression memberExpression);
+        /// <param name="expression">The member expression whose name is required.</param>
+        /// <param name="fieldName">the Elasticsearch field name that matches the member.</param>
+        /// <returns>Returns </returns>
+        bool TryGetFieldName(Type type, Expression expression, out string fieldName);
 
         /// <summary>
         /// Gets criteria that can be used to find documents of a particular type. Will be used by
@@ -62,6 +63,15 @@ namespace ElasticLinq.Mapping
         /// <param name="sourceType">Type of CLR object to materialize to.</param>
         /// <returns>Freshly materialized CLR object version of the source document.</returns>
         object Materialize(JToken sourceDocument, Type sourceType);
+
+        /// <summary>
+        /// Materialize the JObject hit object from Elasticsearch to a CLR object.
+        /// </summary>
+        /// <param name="id">JSON source document id</param>
+        /// <param name="sourceDocument">JSON source document.</param>
+        /// <param name="sourceType">Type of CLR object to materialize to.</param>
+        /// <returns>Freshly materialized CLR object version of the source document.</returns>
+        object Materialize(string id,JToken sourceDocument, Type sourceType);
 
         /// <summary>
         /// Get the Elastic field type that corresponds with this CLR type.

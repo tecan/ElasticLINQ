@@ -75,7 +75,10 @@ namespace ElasticLinq.Request.Formatters
 
             long? size = searchRequest.Size ?? connection.Options.SearchSizeDefault;
             if (size.HasValue) 
-                root.Add("size", size.Value); 
+                root.Add("size", size.Value);
+
+            if (searchRequest.TrackTotalHits.HasValue)
+                root.Add("track_total_hits", searchRequest.TrackTotalHits);
 
             if (connection.Timeout != TimeSpan.Zero)
                 root.Add("timeout", Format(connection.Timeout));
