@@ -8,7 +8,7 @@ namespace ElasticLinq.Request.Criteria
     /// Criteria that specifies one possible value that a
     /// field must match in order to select a document.
     /// </summary>
-    public class MatchCriteria : SingleFieldCriteria, ITermsCriteria
+    public class MatchCriteria : SingleFieldCriteria
     {
         readonly ReadOnlyCollection<object> values;
 
@@ -25,9 +25,6 @@ namespace ElasticLinq.Request.Criteria
             values = new ReadOnlyCollection<object>(new[] { value });
         }
 
-        // "match" is always implicitly combinable by OrCriteria.Combine
-        bool ITermsCriteria.IsOrCriteria => true;
-
         /// <summary>
         /// Property or field being checked for this match.
         /// </summary>
@@ -40,11 +37,6 @@ namespace ElasticLinq.Request.Criteria
         /// Constant value being checked.
         /// </summary>
         public object Value => Convert.ToString(values[0]).ToLower();
-
-        /// <summary>
-        /// List of constant values being checked for.
-        /// </summary>
-        ReadOnlyCollection<object> ITermsCriteria.Values => values;
 
         /// <inheritdoc/>
         public override string ToString()
